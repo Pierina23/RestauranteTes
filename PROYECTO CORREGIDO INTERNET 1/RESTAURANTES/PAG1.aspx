@@ -185,7 +185,7 @@ div.c {
      <div class="row-bot">
         <div class="row-bot-bg">
             <div class="main">
-                <h2>SUGERIR PLATO</h2>
+                <h2>DANOS TU VOTO A NUESTROS PLATOS SUGERIDOS</h2>
             </div>
         </div>
     </div>
