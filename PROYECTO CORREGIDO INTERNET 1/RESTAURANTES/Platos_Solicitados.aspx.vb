@@ -18,7 +18,7 @@ Partial Class Contactenos
             Dim cont As Integer
             con = New SqlConnection(CStr(Session("sessStrCon")))
             con.Open()
-            strSQL = "select 'False', Codigo_Plato as [Codigo],[Nombre],[Estado],[Fecha], [CI] from[tbm_sugerirplato] where Estado='P' order by CI desc"
+            strSQL = "select 'False', Codigo_Plato as [Codigo],[Nombre],[Estado],[Fecha], Sum([CI]) as CI from [tbm_sugerirplato] where Estado='V' GROUP BY Codigo_Plato, Nombre, Estado, Fecha order by CI desc"
             sda = New SqlDataAdapter(strSQL, con)
             dt = New DataTable()
             dt.Columns.Add("Check", Type.GetType("System.Boolean"))
@@ -69,7 +69,7 @@ Partial Class Contactenos
         Dim cont As Integer
         con = New SqlConnection(CStr(Session("sessStrCon")))
         con.Open()
-        strSQL = "select 'False', Codigo_Plato as [Codigo],[Nombre],[Estado],[Fecha], [CI] from[tbm_sugerirplato] where Estado='P' order by CI desc"
+        strSQL = "select 'False', Codigo_Plato as [Codigo],[Nombre],[Estado],[Fecha], Sum([CI]) as CI from [tbm_sugerirplato] where Estado='V' GROUP BY Codigo_Plato, Nombre, Estado, Fecha order by CI desc"
         sda = New SqlDataAdapter(strSQL, con)
         dt = New DataTable()
         dt.Columns.Add("Check", Type.GetType("System.Boolean"))
