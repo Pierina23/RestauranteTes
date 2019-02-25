@@ -54,19 +54,7 @@ Partial Class PAG01
             gridvPla.DataBind()
         End If
     End Sub
-    'Protected Sub Button6_clik(sender As Object, e As SystemException) Handles button_grabar.Click
-    '    For Each row As GridViewRow In GridView1.rows
-    '        If row.RowType = DataControlRowType.DataRow Then
-    '            If chkRow.Checked = TryCast(row.Cells(0).FindControl("Estado"), CheckBox) Then
-    '                If chkRow.checked Then
-    '                    Dim v_nombre As String = row.Cells(1).Text
-    '                    Dim v_deporte As String = row.Cells(2).Text
-    '                End If
-    '            End If
 
-    '        End If
-    '    Next
-    'End Sub
     Protected Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
 
         Dim i As Integer
@@ -89,17 +77,19 @@ Partial Class PAG01
                     dt3 = New DataTable()
                     sda.Fill(dt3)
                     If dt3.Rows.Count <= 0 Then
-                        strSQL = "select CI from [tbm_sugerirplato] where Codigo_Plato =" & valueCodigo.Text
+                        strSQL = "select * from [tbm_sugerirplato] where Codigo_Plato =" & valueCodigo.Text
                         sda = New SqlDataAdapter(strSQL, con)
                         dt = New DataTable()
                         sda.Fill(dt)
-                        Dim valor As Integer = Convert.ToInt32(dt.Rows(0)(0).ToString())
+                        Dim valor As Integer = Convert.ToInt32(dt.Rows(0)(5).ToString())
+                        Dim nombre As String = dt.Rows(0)(2).ToString()
+                        Dim observacion As String = dt.Rows(0)(3).ToString()
                         Dim resultado As Integer = valor + 1
 
-                        strSQL = "Update tbm_sugerirplato "
-                        strSQL = strSQL & " set CI = " & resultado & ", IdPersona = " & Usuario
-                        strSQL = strSQL & " WHERE Codigo_Plato = " & valueCodigo.Text
-                        'strSQL = strSQL & " and IdPersona = " & Usuario
+                        strSQL = ""
+                        strSQL = "INSERT INTO tbm_sugerirplato(Codigo_Plato, Nombre,  Observaciones, Fecha, Estado, IdPersona, CI)" &
+                        " VALUES(" & valueCodigo.Text & ", '" & nombre & "' ,'" & observacion & "', '" & DateTime.Now.ToString("yyyy-MM-dd") &
+                        "', 'V'," & Usuario & "," & 1 & ")"
 
                         Dim actualizar As New SqlCommand(strSQL, con)
                         count = actualizar.ExecuteNonQuery()
@@ -107,58 +97,29 @@ Partial Class PAG01
                         If count > 0 Then
                             MsgBox("Usted votó por el plato " & valueNombre.Text.TrimEnd() & " muchas gracias por apreciarnos...")
                         Else
-                            MsgBox("No se ctualizó ningún registro!!!")
+                            MsgBox("No se actualizó ningún registro!!!")
                         End If
+                    Else
+                        MsgBox("Usted ya votó por el plato " & valueNombre.Text.TrimEnd() & ", sólo puede dar el voto una sola vez.")
                     End If
                 End If
             End If
         Next
 
-
-        Usuario = CStr(Session("CodigoMesero"))
-        Dim cont As Integer
-        Dim cont2 As Integer
-        con = New SqlConnection(CStr(Session("sessStrCon")))
-        con.Open()
-        strSQL = "select 0 [Check], Codigo_Plato as [Codigo],[Nombre],[CI] as TotalVotos from[tbm_sugerirplato] where Estado='P' and CI <= 0"
-        sda = New SqlDataAdapter(strSQL, con)
-        dt = New DataTable()
-        dt.Columns.Add("Check", Type.GetType("System.Boolean"))
-        dt.Columns.Add("Codigo", Type.GetType("System.String"))
-        dt.Columns.Add("Nombre", Type.GetType("System.String"))
-        dt.Columns.Add("TotalVotos", Type.GetType("System.String"))
-
-        sda.Fill(dt)
+        For i = 0 To gridvPla.Rows.Count - 1
+            row = gridvPla.Rows(i)
+            If row.RowType = DataControlRowType.DataRow Then
+                ch = row.FindControl("chkVoto")
+                ch.Checked = False
+            End If
+        Next
 
 
-        'Cliente
-        strSQL2 = "select 1 [Check], Codigo_Plato as [Codigo],[Nombre],[CI] as TotalVotos from tbm_sugerirplato where estado = 'P' and IdPersona in ('" & Usuario & "') and CI > 0"
-        sda = New SqlDataAdapter(strSQL2, con)
-        dt2 = New DataTable()
-        dt2.Columns.Add("Check", Type.GetType("System.Boolean"))
-        dt2.Columns.Add("Codigo", Type.GetType("System.String"))
-        dt2.Columns.Add("Nombre", Type.GetType("System.String"))
-        dt2.Columns.Add("TotalVotos", Type.GetType("System.String"))
-        sda.Fill(dt2)
-
-
-        con.Close()
-        cont = dt.Rows.Count
-        cont2 = dt2.Rows.Count
-        dt.Merge(dt2)
-
-        gridvPla.DataSource = dt
-        gridvPla.DataBind()
 
 
     End Sub
     Protected Sub CheckBox2_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs)
-        Dim showCheckBox As CheckBox = CType(sender, CheckBox)
-        If showCheckBox.Checked Then
-            showCheckBox.Enabled = False
-        Else
-            showCheckBox.Enabled = True
-        End If
+
     End Sub
 
 End Class
